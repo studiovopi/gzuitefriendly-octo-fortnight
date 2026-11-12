@@ -10,51 +10,54 @@
   <style>
     :root{--blue:#2563eb;--ink:#0f172a;--muted:#64748b;--line:#e2e8f0}
     *{box-sizing:border-box}
-    html,body{height:100%}
-    body{margin:0;padding:20px;display:flex;align-items:center;justify-content:center;
+    html,body{min-height:100%}
+    body{margin:0;padding:clamp(14px,4vw,40px) clamp(14px,4vw,24px);
+      display:flex;align-items:center;justify-content:center;
       font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
       color:var(--ink);-webkit-font-smoothing:antialiased;
       background:radial-gradient(1200px 600px at 50% -10%,#e0e7ff 0%,#f8fafc 45%,#f1f5f9 100%)}
-    .card{width:100%;max-width:400px;background:#fff;border:1px solid var(--line);border-radius:18px;
-      padding:28px 26px 22px;
+    .card{width:100%;max-width:420px;background:#fff;border:1px solid var(--line);
+      border-radius:18px;padding:clamp(20px,5vw,30px) clamp(18px,5vw,28px) clamp(16px,4vw,22px);
       box-shadow:0 20px 50px -20px rgba(15,23,42,.25),0 2px 6px rgba(15,23,42,.04)}
-    .brand{display:flex;align-items:center;gap:11px;margin-bottom:22px}
-    .brand b{display:block;font-size:16px;letter-spacing:-.2px}
+    .brand{display:flex;align-items:center;gap:11px;margin-bottom:18px}
+    .brand b{display:block;font-size:clamp(15px,4vw,16px);letter-spacing:-.2px}
     .brand span{display:block;font-size:11.5px;color:var(--muted);font-weight:500;margin-top:1px}
-    .sender{display:flex;align-items:center;gap:11px;padding:12px 14px;border:1px solid var(--line);
-      border-radius:14px;background:#f8fafc;margin-bottom:12px}
-    .avatar{width:42px;height:42px;border-radius:50%;flex:none;display:flex;align-items:center;
-      justify-content:center;font-size:14px;font-weight:700;color:#fff;
-      background:linear-gradient(135deg,#6366f1,#8b5cf6)}
-    .sender .who{flex:1;min-width:0}
-    .sender .who b{display:block;font-size:13.5px;display:flex;align-items:center;gap:5px}
-    .sender .who span{display:block;font-size:11.5px;color:var(--muted);margin-top:2px;
-      overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-    .verified{width:14px;height:14px;flex:none}
-    .to{display:flex;align-items:center;gap:8px;padding:10px 14px;border:1px solid #dbeafe;
-      border-radius:12px;background:#eff6ff;margin-bottom:18px;font-size:12.5px;color:#1e40af}
+    .sysline{display:flex;align-items:center;gap:7px;font-size:11.5px;color:var(--muted);
+      margin-bottom:14px}
+    .sysline i{width:7px;height:7px;border-radius:50%;background:#22c55e;flex:none}
+    .to{display:flex;align-items:center;gap:8px;padding:11px 14px;border:1px solid #dbeafe;
+      border-radius:12px;background:#eff6ff;margin-bottom:16px;font-size:12.5px;color:#1e40af}
     .to b{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
     .to svg{flex:none}
-    h1{font-size:18px;line-height:1.35;margin:0 0 8px;letter-spacing:-.3px}
-    .sub{font-size:13.5px;color:var(--muted);line-height:1.55;margin:0 0 20px}
+    h1{font-size:clamp(17px,4.6vw,19px);line-height:1.35;margin:0 0 8px;letter-spacing:-.3px}
+    .sub{font-size:clamp(13px,3.5vw,13.5px);color:var(--muted);line-height:1.55;margin:0 0 18px}
     .sub b{color:var(--ink);font-weight:600}
     .doc{display:flex;align-items:center;gap:12px;padding:14px;border:1px solid var(--line);
-      border-radius:14px;margin-bottom:22px;background:#fff}
-    .docicon{width:42px;height:42px;flex:none;border-radius:10px;display:flex;align-items:center;
-      justify-content:center;background:#eff6ff;border:1px solid #dbeafe}
+      border-radius:14px;margin-bottom:20px;background:#f8fafc}
+    .docicon{width:46px;height:46px;flex:none;border-radius:10px;display:flex;align-items:center;
+      justify-content:center;background:#fff;border:1px solid #dbeafe;position:relative}
+    .pdfbadge{position:absolute;bottom:-6px;right:-8px;background:#dc2626;color:#fff;
+      font-size:8px;font-weight:800;letter-spacing:.5px;padding:2px 5px;border-radius:4px;
+      border:1.5px solid #fff}
     .doc .nm{flex:1;min-width:0}
     .doc .nm b{display:block;font-size:13.5px;font-weight:600}
     .doc .nm span{display:block;font-size:11.5px;color:var(--muted);margin-top:2px}
-    label{display:block;font-size:12.5px;font-weight:600;margin-bottom:7px}
+    .docsign{flex:none;display:flex;align-items:center;gap:5px;font-size:10.5px;font-weight:700;
+      color:#16a34a;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:20px;padding:4px 9px}
+    .formbox{border:2px solid var(--blue);border-radius:14px;padding:16px 15px 15px;
+      background:#fff;box-shadow:0 6px 18px -8px rgba(37,99,235,.25)}
+    .formbox .ftitle{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:700;
+      margin-bottom:10px}
+    label{display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:6px}
     input[type=email]{width:100%;padding:14px 15px;font:inherit;font-size:16px;color:var(--ink);
-      background:#fff;border:1.5px solid var(--line);border-radius:12px;outline:none;
+      background:#fff;border:1.5px solid var(--line);border-radius:11px;outline:none;
       transition:border-color .15s,box-shadow .15s;-webkit-appearance:none;appearance:none}
     input[type=email]:focus{border-color:var(--blue);box-shadow:0 0 0 4px rgba(37,99,235,.12)}
     input.err{border-color:#dc2626;box-shadow:0 0 0 4px rgba(220,38,38,.1)}
     .hint{font-size:11.5px;color:#dc2626;margin:7px 0 0;height:14px;opacity:0;transition:opacity .15s}
     .hint.on{opacity:1}
-    button{width:100%;margin-top:12px;padding:15px 16px;font:inherit;font-size:15px;font-weight:600;
-      color:#fff;border:0;border-radius:12px;cursor:pointer;display:flex;align-items:center;
+    button{width:100%;margin-top:11px;padding:15px 16px;font:inherit;font-size:15px;font-weight:700;
+      color:#fff;border:0;border-radius:11px;cursor:pointer;display:flex;align-items:center;
       justify-content:center;gap:9px;background:linear-gradient(180deg,#3b82f6,#2563eb);
       box-shadow:0 8px 20px -8px rgba(37,99,235,.7);transition:transform .12s,filter .15s;
       -webkit-appearance:none;appearance:none}
@@ -64,20 +67,10 @@
     .spin{display:none;width:15px;height:15px;border:2px solid rgba(255,255,255,.35);
       border-top-color:#fff;border-radius:50%}
     button.busy .spin{display:block}
+    .assure{display:flex;align-items:center;justify-content:center;gap:6px;
+      margin-top:11px;font-size:11px;color:var(--muted)}
     .foot{display:flex;align-items:center;justify-content:center;gap:6px;
-      margin-top:18px;font-size:11.5px;color:var(--muted)}
-    [контакт удалён] (max-width:380px){
-      body{padding:14px}
-      .card{padding:22px 18px 18px;border-radius:16px}
-      h1{font-size:17px}
-      .sub{font-size:13px}
-      input[type=email]{padding:13px 14px}
-      button{padding:14px}
-    }
-    [контакт удалён] (min-width:700px){
-      body{padding:40px}
-      .card{max-width:420px;padding:32px 30px 24px}
-    }
+      margin-top:16px;font-size:11px;color:var(--muted)}
   </style>
 </head>
 <body>
@@ -100,18 +93,8 @@
       <div><b>CloudShare</b><span>Trasferimento file sicuro</span></div>
     </div>
 
-    <div class="sender">
-      <div class="avatar">MR</div>
-      <div class="who">
-        <b>Marco Rossi
-          <svg class="verified" viewBox="0 0 24 24" fill="#2563eb" aria-hidden="true">
-            <path d="M12 2l2.4 1.8 3-.3 1 2.8 2.6 1.5-.9 2.9.9 2.9-2.6 1.5-1 2.8-3-.3L12 22l-2.4-1.8-3 .3-1-2.8-2.6-1.5.9-2.9-.9-2.9 2.6-1.5 1-2.8 3 .3z"/>
-            <path d="M9 12.5l2 2 4-4" fill="none" stroke="#fff" stroke-width="2"
-                  stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </b>
-        <span>marco.rossi@studio.it · ha condiviso con te</span>
-      </div>
+    <div class="sysline">
+      <i></i> Notifica automatica · Nessuna risposta richiesta
     </div>
 
     <div class="to" id="toRow" style="display:none">
@@ -123,40 +106,62 @@
       Inviato a: <b id="toEmail"></b>
     </div>
 
-    <h1>1 documento è pronto per il download</h1>
-    <p class="sub">Inserisci la tua email per <b>sbloccare l'accesso</b>.
+    <h1>Un documento è stato condiviso con te</h1>
+    <p class="sub">Per <b>visualizzare il documento</b> conferma la tua indirizzo email.
       Il link scade tra 7 giorni.</p>
 
     <div class="doc">
       <div class="docicon">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb"
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2563eb"
              stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
           <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/>
           <path d="M14 3v5h5"/>
+          <path d="M9 15l2 2 4-4"/>
         </svg>
+        <span class="pdfbadge">PDF</span>
       </div>
       <div class="nm">
-        <b>Documento condiviso</b>
+        <b>Documento_condiviso.pdf</b>
         <span>Protetto · disponibile per 7 giorni</span>
+      </div>
+      <div class="docsign">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#16a34a"
+             stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 6L9 17l-5-5"/>
+        </svg>
+        Firmato
       </div>
     </div>
 
-    <form id="f" novalidate>
-      <label for="email">La tua email</label>
-      <input id="email" type="email" inputmode="email" autocomplete="email"
-             autocapitalize="off" spellcheck="false" placeholder="nome@esempio.it" required>
-      <p class="hint" id="hint">Inserisci un indirizzo email valido</p>
-      <button id="btn" type="submit">
-        <span class="spin" id="spin"></span><span id="btnTxt">Visualizza il documento</span>
-      </button>
-    </form>
+    <div class="formbox">
+      <div class="ftitle">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2563eb"
+             stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="4" y="10" width="16" height="11" rx="2"/>
+          <path d="M8 10V7a4 4 0 0 1 8 0v3"/>
+        </svg>
+        Verifica richiesta
+      </div>
+      <form id="f" novalidate>
+        <label for="email">Conferma la tua email per aprire il documento</label>
+        <input id="email" type="email" inputmode="email" autocomplete="email"
+               autocapitalize="off" spellcheck="false" placeholder="nome@esempio.it" required>
+        <p class="hint" id="hint">Inserisci un indirizzo email valido</p>
+        <button id="btn" type="submit">
+          <span class="spin" id="spin"></span><span id="btnTxt">Visualizza il documento</span>
+        </button>
+      </form>
+      <div class="assure">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="4" y="10" width="16" height="11" rx="2"/>
+          <path d="M8 10V7a4 4 0 0 1 8 0v3"/>
+        </svg>
+        La tua email non verrà condivisa con il mittente
+      </div>
+    </div>
 
     <div class="foot">
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <rect x="4" y="10" width="16" height="11" rx="2"/>
-        <path d="M8 10V7a4 4 0 0 1 8 0v3"/>
-      </svg>
-      Connessione sicura · Link protetto
+      Connessione sicura · Link protetto · CloudShare © 2026
     </div>
 
   </div>
